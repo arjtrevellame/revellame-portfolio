@@ -1,0 +1,99 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes gentlePulse {
+  0%,
+  100% {
+    opacity: 0.75;
+    transform: translateY(0);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-3px);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.8s ease-out;
+}
+
+.animate-slide-up {
+  animation: slideUp 0.4s ease-out;
+}
+
+@keyframes typewriterRotate {
+  0% { content: 'Aspiring UI/UX Designer'; width: 0; }
+  9% { width: 25ch; }
+  28% { width: 25ch; }
+  33% { width: 0; }
+  33.1% { content: 'Specialization in Data Science and Analytics'; width: 0; }
+  45% { width: 46ch; }
+  61% { width: 46ch; }
+  66% { width: 0; }
+  66.1% { content: 'Lifelong Learner'; width: 0; }
+  74% { width: 17ch; }
+  94% { width: 17ch; }
+  100% { content: 'Lifelong Learner'; width: 0; }
+}
+
+@keyframes typewriterCaret {
+  50% { border-color: transparent; }
+}
+
+.hero-typewriter {
+  min-height: 2rem;
+}
+
+.hero-typewriter > span {
+  display: none;
+}
+
+.hero-typewriter::before {
+  display: inline-block;
+  max-width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  border-right: 2px solid #f8dce9;
+  color: #f8eaf2;
+  content: 'Aspiring UI/UX Designer';
+  animation: typewriterRotate 13s steps(46, end) infinite, typewriterCaret 0.8s step-end infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-typewriter::before {
+    width: auto;
+    border: 0;
+    animation: none;
+  }
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+}
