@@ -16,6 +16,8 @@ import {
   ChevronRight,
   Download,
   ExternalLink,
+  MessageSquareQuote,
+  Send,
   X,
   Star,
   Moon,
@@ -24,6 +26,23 @@ import {
   School2,
   BriefcaseIcon,
 } from 'lucide-react';
+
+type Recommendation = {
+  id: number;
+  name: string;
+  role: string;
+  text: string;
+};
+
+const initialRecommendations: Recommendation[] = [
+  {
+    id: 1,
+    name: 'Sarah Cruz',
+    role: 'Senior Software Engineer',
+    text: 'Avon is an outstanding developer who consistently delivers high-quality work. Her ability to break down complex problems and mentor teammates makes her an invaluable asset to any engineering team.',
+  },
+  
+];
 
 const skills = [
   { name: 'HTML', image: imageAssets.HTML },
@@ -175,6 +194,11 @@ function App() {
   const [isDarkMode, setIsDarkMode] = useState(() =>
     localStorage.getItem('theme') === 'dark'
   );
+  const [recommendations, setRecommendations] = useState<Recommendation[]>(
+    initialRecommendations
+  );
+  const [recommendationText, setRecommendationText] = useState('');
+  const [showPopup, setShowPopup] = useState(false);
   const [certificatePage, setCertificatePage] = useState(0);
   const [previewedCertificateIndex, setPreviewedCertificateIndex] = useState<number | null>(null);
   const [isCertificateTransitioning, setIsCertificateTransitioning] = useState(false);
@@ -206,6 +230,26 @@ function App() {
       certificateTransitionTimeoutRef.current = null;
     }, 180);
   };
+
+  const addRecommendation = () => {
+    if (recommendationText.trim() === '') return;
+    const newRec: Recommendation = {
+      id: Date.now(),
+      name: 'You',
+      role: 'Just now',
+      text: recommendationText.trim(),
+    };
+    setRecommendations((prev) => [...prev, newRec]);
+    setRecommendationText('');
+    setShowPopup(true);
+  };
+
+  useEffect(() => {
+    if (showPopup) {
+      const timer = setTimeout(() => setShowPopup(false), 3500);
+      return () => clearTimeout(timer);
+    }
+  }, [showPopup]);
 
   useEffect(() => {
     localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
@@ -366,7 +410,7 @@ function App() {
       <nav className="fixed top-0 left-0 right-0 z-50 bg-[#7a4f6d]/95 backdrop-blur-md border-b border-[#a66f8f] shadow-lg dark:border-slate-700 dark:bg-slate-900/95">
         <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="text-2xl font-bold text-white tracking-tight">
-            Avon Reeven Jane Revellame
+            ARJ
           </div>
           <div className="hidden md:flex items-center gap-8">
             {[
@@ -407,6 +451,7 @@ function App() {
               { target: '#about', icon: User },
               { target: '#skills', icon: Code2 },
               { target: '#projects', icon: FolderGit2 },
+              { target: '#recommendations', icon: MessageSquareQuote },
             ].map(({ target, icon: Icon }) => (
               <a
                 key={target}
@@ -843,7 +888,7 @@ function App() {
                 </ul>
               </section>
             </div>
-            <a
+            {/* <a
               href={reportPDF}
               target="_blank"
               rel="noreferrer"
@@ -851,7 +896,7 @@ function App() {
             >
               <ExternalLink className="h-5 w-5" />
               View Full Report
-            </a>
+            </a> */}
 
           </article>
         </div>
@@ -887,6 +932,67 @@ function App() {
         </div>
       </section>
 
+      {/* ===== RECOMMENDATIONS ===== */}
+      <section id="recommendations" className="py-20 px-6 bg-[#fdf2f8] transition-colors duration-300 dark:bg-slate-950">
+        <div className="max-w-5xl mx-auto">
+          <h2 className="text-3xl font-bold text-slate-900 mb-10 flex items-center gap-3 dark:text-white">
+            <MessageSquareQuote className="w-7 h-7 text-[#d78eb0]" />
+            Recommendations
+          </h2>
+          <div className="grid md:grid-cols-2 gap-6">
+            {recommendations.map((rec) => (
+              <div
+                key={rec.id}
+                className="recommendation rounded-xl border border-[#f3d8e5] bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-[#d78eb0] hover:shadow-xl hover:shadow-[#d78eb0]/15 dark:border-slate-700 dark:bg-slate-800"
+              >
+                <div className="flex items-center gap-1 mb-3">
+                  {[...Array(5)].map((_, i) => (
+                    <Star
+                      key={i}
+                      className="w-4 h-4 fill-amber-400 text-amber-400"
+                    />
+                  ))}
+                </div>
+                <p className="text-slate-600 leading-relaxed italic mb-4 dark:text-slate-300">
+                  "{rec.text}"
+                </p>
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-sky-500 text-white flex items-center justify-center font-bold">
+                    {rec.name.charAt(0)}
+                  </div>
+                  <div>
+                    <p className="font-semibold text-slate-900 dark:text-white">{rec.name}</p>
+                    <p className="text-sm text-slate-500 dark:text-slate-400">{rec.role}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Add recommendation form */}
+          <div className="mt-10 rounded-xl border border-slate-200 bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-[#d78eb0] hover:shadow-xl hover:shadow-[#d78eb0]/15 focus-within:-translate-y-1 focus-within:border-[#d78eb0] focus-within:shadow-xl focus-within:shadow-[#d78eb0]/15 dark:border-slate-700 dark:bg-slate-800">
+            <h3 className="text-lg font-bold text-slate-900 mb-4 dark:text-white">
+              Add a Recommendation
+            </h3>
+            <textarea
+              value={recommendationText}
+              onChange={(e) => setRecommendationText(e.target.value)}
+              placeholder="Share your thoughts..."
+              className="w-full p-4 border border-slate-300 rounded-lg focus:ring-2 focus:ring-sky-400 focus:border-transparent outline-none resize-none text-slate-700 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:placeholder:text-slate-400"
+              rows={3}
+            />
+            <button
+              id="recommend_btn"
+              onClick={addRecommendation}
+              className="mt-4 flex items-center gap-2 rounded-full bg-[#d78eb0] px-8 py-3 font-semibold text-white shadow-lg shadow-[#d78eb0]/30 transition-transform hover:scale-105 hover:bg-[#c56f99]"
+            >
+              <Send className="w-4 h-4" />
+              Submit Recommendation
+            </button>
+          </div>
+        </div>
+      </section>
+
       {/* ===== HOME ICON (scroll to top) ===== */}
       <div className="fixed bottom-6 right-6 z-40">
         <a
@@ -901,6 +1007,30 @@ function App() {
           <Home className="w-6 h-6" />
         </a>
       </div>
+
+      {/* ===== POPUP ===== */}
+      {showPopup && (
+        <div
+          id="popup"
+          className="fixed bottom-24 right-6 z-50 animate-slide-up"
+        >
+          <div className="flex items-center gap-3 bg-[#c56f99] text-white px-6 py-4 rounded-xl shadow-2xl">
+            <Star className="w-5 h-5 fill-white" />
+            <div>
+              <p className="font-bold">Recommendation added!</p>
+              <p className="text-sm text-emerald-50">
+                Thank you for your recommendation. It has been added to the list.
+              </p>
+            </div>
+            <button
+              onClick={() => setShowPopup(false)}
+              className="ml-2 text-white/80 hover:text-white"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* ===== FOOTER ===== */}
       <footer className="bg-[#7a4f6d] text-[#fcecf5] py-8 px-6 text-center">
